@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ENTER PASSWORD</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    input, button {
+      font-size: 2.5rem;
+      margin: 20px;
+    }
+    #msg {
+      font-size: 2rem;
+      color: red;
+    }
+  </style>
+  <script>
+    if (sessionStorage.getItem("gate_passed") === "yes") window.location.href = "chat.html";
+    async function checkPass(e) {
+      e.preventDefault();
+      try {
+        const res = await fetch('/api/check-pass', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({code:document.getElementById('pass').value.trim()})
+        });
+        const data = await res.json();
+        if (data.success) {
+          sessionStorage.setItem("gate_passed","yes");
+          window.location.href = "chat.html";
+        } else document.getElementById('msg').innerText = '✗ WRONG PASSWORD';
+      } catch { document.getElementById('msg').innerText = '✗ SERVER ERROR'; }
+    }
+  </script>
+</head>
+<body>
+  <form onsubmit="checkPass(event)">
+    <input type="password" id="pass" required>
+    <button type="submit">→</button>
+    <div id="msg"></div>
+  </form>
+</body>
+</html>
